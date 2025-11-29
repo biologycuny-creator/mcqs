@@ -6,9 +6,9 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
         h1 { color: #333; }
-        .question { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .question { display: none; margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .options label { display: block; margin: 5px 0; padding: 5px; border-radius: 5px; cursor: pointer; }
-        button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; }
+        button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; margin-top: 10px; }
         button:hover { background: #0056b3; }
         #score { font-size: 20px; margin-top: 20px; }
     </style>
@@ -18,7 +18,6 @@
     <form id="quizForm">
 
         <!-- Questions 1-30 -->
-        <!-- Monohybrid with Dominance -->
         <div class="question">
             <p>1. What is the phenotypic ratio in the F₂ generation of a monohybrid cross with dominance?</p>
             <label><input type="radio" name="q1" value="a"> a) 1:1</label>
@@ -99,7 +98,7 @@
             <label><input type="radio" name="q10" value="d"> d) Karyotype</label>
         </div>
 
-        <!-- Dihybrid with Dominance -->
+        <!-- Questions 11-30 -->
         <div class="question">
             <p>11. What is the phenotypic ratio in the F₂ generation of a dihybrid cross with dominance?</p>
             <label><input type="radio" name="q11" value="a"> a) 3:1</label>
@@ -180,7 +179,7 @@
             <label><input type="radio" name="q20" value="d"> d) F₃</label>
         </div>
 
-        <!-- Incomplete Dominance -->
+        <!-- Questions 21-30 -->
         <div class="question">
             <p>21. What is the phenotypic ratio in the F₂ generation of an incomplete dominance cross?</p>
             <label><input type="radio" name="q21" value="a"> a) 3:1</label>
@@ -221,7 +220,6 @@
             <label><input type="radio" name="q25" value="d"> d) Recessive traits disappear in F₁</label>
         </div>
 
-        <!-- Heterozygote/Homozygote/Allele -->
         <div class="question">
             <p>26. What term describes an individual with two identical alleles (e.g., PP)?</p>
             <label><input type="radio" name="q26" value="a"> a) Heterozygote</label>
@@ -262,52 +260,61 @@
             <label><input type="radio" name="q30" value="d"> d) Mixed</label>
         </div>
 
-        <button type="button" onclick="checkQuiz()">Submit Quiz</button>
+        <!-- Navigation buttons -->
+        <div style="margin-top:10px;">
+            <button type="button" id="prevBtn" onclick="nextPrev(-1)" disabled>Previous</button>
+            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+        </div>
     </form>
 
     <div id="score"></div>
 
     <script>
         const answers = {
-            q1: 'b', q2: 'b', q3: 'c', q4: 'b', q5: 'c',
-            q6: 'b', q7: 'b', q8: 'b', q9: 'b', q10: 'b',
-            q11: 'c', q12: 'c', q13: 'b', q14: 'b', q15: 'a',
-            q16: 'b', q17: 'b', q18: 'b', q19: 'b', q20: 'b',
-            q21: 'b', q22: 'c', q23: 'd', q24: 'a', q25: 'b',
-            q26: 'b', q27: 'b', q28: 'b', q29: 'b', q30: 'b'
+            q1:'b',q2:'b',q3:'c',q4:'b',q5:'c',
+            q6:'b',q7:'b',q8:'b',q9:'b',q10:'b',
+            q11:'c',q12:'c',q13:'b',q14:'b',q15:'a',
+            q16:'b',q17:'b',q18:'b',q19:'b',q20:'b',
+            q21:'b',q22:'c',q23:'d',q24:'a',q25:'b',
+            q26:'b',q27:'b',q28:'b',q29:'b',q30:'b'
         };
 
-        function checkQuiz() {
+        let currentQuestion = 0;
+        const questions = document.querySelectorAll('.question');
+        questions[currentQuestion].style.display = 'block';
+
+        function nextPrev(n){
+            questions[currentQuestion].style.display = 'none';
+            currentQuestion += n;
+
+            if(currentQuestion >= questions.length){
+                checkQuiz();
+                return false;
+            }
+
+            questions[currentQuestion].style.display = 'block';
+            document.getElementById('prevBtn').disabled = (currentQuestion === 0);
+        }
+
+        function checkQuiz(){
             let score = 0;
-
-            for (let i = 1; i <= 30; i++) {
+            for(let i=1;i<=30;i++){
                 const qInputs = document.querySelectorAll(`input[name="q${i}"]`);
-                const correctAnswer = answers[`q${i}`];
+                const correct = answers[`q${i}`];
 
-                qInputs.forEach(input => {
-                    // Reset previous colors
-                    input.parentElement.style.backgroundColor = 'transparent';
-
-                    // Highlight student choice
-                    if (input.checked) {
-                        if (input.value === correctAnswer) {
-                            score++;
-                            input.parentElement.style.backgroundColor = '#c8e6c9'; // green
-                        } else {
-                            input.parentElement.style.backgroundColor = '#ffcdd2'; // red
-                        }
-                    }
-                    // Highlight correct answer if not chosen
-                    if (input.value === correctAnswer && !input.checked) {
-                        input.parentElement.style.backgroundColor = '#c8e6c9'; // green
-                    }
-
-                    // Disable all inputs after submission
+                qInputs.forEach(input=>{
                     input.disabled = true;
+                    if(input.value === correct){
+                        input.parentElement.style.backgroundColor = '#c8e6c9'; // green
+                        if(input.checked) score++;
+                    } else if(input.checked){
+                        input.parentElement.style.backgroundColor = '#ffcdd2'; // red
+                    }
                 });
             }
 
-            document.getElementById('score').textContent = `Your Score: ${score} / 30`;
+            document.getElementById('quizForm').style.display = 'none';
+            document.getElementById('score').textContent = `Your Score: ${score}/30`;
         }
     </script>
 </body>
