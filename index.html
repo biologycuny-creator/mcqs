@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MCQ Quiz</title>
+<style>
+body { font-family: Arial; max-width: 600px; margin: auto; }
+button { margin: 5px 0; }
+</style>
+</head>
+<body>
+<h2>MCQ Quiz</h2>
+<div id="quiz"></div>
+<div id="result"></div>
+
+<script>
+const questions = [
+  {
+    question: "What is the capital of France?",
+    options: ["Paris", "London", "Berlin", "Madrid"],
+    answer: 0
+  },
+  {
+    question: "Which element has the chemical symbol O?",
+    options: ["Oxygen", "Gold", "Hydrogen", "Iron"],
+    answer: 0
+  }
+];
+
+let current = 0;
+let score = 0;
+
+function showQuestion() {
+  if (current >= questions.length) {
+    document.getElementById('quiz').innerHTML = "";
+    document.getElementById('result').innerHTML = `<h3>Your score: ${score}/${questions.length}</h3>`;
+    return;
+  }
+  let q = questions[current];
+  let html = `<p>${q.question}</p>`;
+  q.options.forEach((opt, i) => {
+    html += `<button onclick="checkAnswer(${i})">${opt}</button><br>`;
+  });
+  document.getElementById('quiz').innerHTML = html;
+}
+
+function checkAnswer(selected) {
+  if (selected === questions[current].answer) score++;
+  current++;
+  showQuestion();
+}
+
+showQuestion();
+</script>
+</body>
+</html>
